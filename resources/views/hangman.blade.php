@@ -89,9 +89,14 @@
         </div>
 
         <div class="text-center mb-8">
-            <p class="text-lg text-cyan-300 mb-2">
-                Soru / İpucu: <span class="font-bold text-yellow-300" id="question">{{ $game->getQuestion() }}</span>
-            </p>
+ <span class="font-bold text-yellow-300" id="question">
+    @if($game->getQuestion())
+        {{ $game->getQuestion() }}
+    @else
+        Henüz soru eklenmemiş. <strong>Yeni soru ekleyin!</strong>
+    @endif
+</span>
+
             <p class="text-5xl tracking-widest font-mono mb-4 text-yellow-400 drop-shadow-lg" id="maskedWord">
                 {{ $game->getMaskedWord() }}
             </p>
