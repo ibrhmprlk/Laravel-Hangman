@@ -24,14 +24,15 @@ class Hangman
         int $hintAttemptsLeft = 3,
         bool $wonByFullWord = false
     ) {
-        if (!$word || !$question) {
-            $random = HangmanQuestion::inRandomOrder()->first();
-            $this->originalWord = $random?->answer ?? 'LARAVEL';
-            $this->question = $random?->question ?? 'Framework';
-        } else {
-            $this->originalWord = $word;
-            $this->question = $question;
-        }
+       if (!$word || !$question) {
+    $random = HangmanQuestion::inRandomOrder()->first();
+    $this->originalWord = $random?->answer ?? '';
+    $this->question = $random?->question ?? 'Henüz soru eklenmedi';
+} else {
+    $this->originalWord = $word;
+    $this->question = $question;
+}
+
 
         $this->cleanWord = $this->normalize($this->originalWord);
         $this->guessedLetters = array_map('mb_strtoupper', $guessedLetters);
@@ -47,38 +48,43 @@ class Hangman
         return preg_replace('/\s+/', '', str_replace(['İ', 'i'], ['I', 'I'], mb_strtoupper($text, 'UTF-8')));
     }
 
-    public function getMaskedWord(): string
-    {
-        $result = '';
-        $chars = mb_str_split($this->originalWord, 1, 'UTF-8');
-
-        foreach ($chars as $char) {
-            $cleanChar = $this->normalize($char);
-            if (in_array($cleanChar, $this->guessedLetters) || trim($char) === '') {
-                $result .= $char;
-            } else {
-                $result .= '_';
-            }
-            $result .= ' ';
-        }
-        return trim($result);
+  public function getMaskedWord(): string
+{
+    if (empty($this->originalWord)) {
+        return ''; // veya 'Henüz kelime eklenmedi'
     }
 
+    $result = '';
+    $chars = mb_str_split($this->originalWord, 1, 'UTF-8');
+
+    foreach ($chars as $char) {
+        $cleanChar = $this->normalize($char);
+        if (in_array($cleanChar, $this->guessedLetters) || trim($char) === '') {
+            $result .= $char;
+        } else {
+            $result .= '_';
+        }
+        $result .= ' ';
+    }
+    return trim($result);
+}
     // ASIL KULLANILAN METOD – HER ŞEY BURADAN GEÇER
- public function guessWord(string $guess): bool
+public function guessWord(string $guess): bool
 {
+    // Eğer kelime yoksa tahmin yapılamaz
+    if (empty($this->originalWord)) {
+        throw new \Exception("Önce bir soru seçin veya ekleyin!");
+    }
+
     $cleanGuess = $this->normalize($guess);
 
-    // Orijinal tahmin listeye eklensin (123, klsdfs, selam123 vs.)
     if (!in_array($guess, $this->guessedLetters)) {
         $this->guessedLetters[] = $guess;
     }
 
-    // TAM KELİME EŞLEŞMESİ → KAZANDI + TÜM HARFLERİ AÇ
+    // TAM KELİME EŞLEŞMESİ
     if ($cleanGuess === $this->cleanWord) {
         $this->wonByFullWord = true;
-
-        // YENİ EKLENEN KISIM: Tüm harfleri guessedLetters'a ekle
         foreach (mb_str_split($this->cleanWord, 1, 'UTF-8') as $char) {
             if (!in_array($char, $this->guessedLetters)) {
                 $this->guessedLetters[] = $char;
@@ -136,9 +142,13 @@ class Hangman
     }
 
     public function isWordGuessed(): bool
-    {
-        return $this->wonByFullWord || !str_contains($this->getMaskedWord(), '_');
+{
+    if (empty($this->originalWord)) {
+        return false; // kelime yoksa kazandınız mesajı gelmesin
     }
+
+    return $this->wonByFullWord || !str_contains($this->getMaskedWord(), '_');
+}
 
     public function isGameOver(): bool
     {
@@ -147,7 +157,11 @@ class Hangman
 
     // Getters
     public function getWord(): string { return $this->originalWord; }
-    public function getQuestion(): string { return $this->question; }
+   public function getQuestion(): string {
+    return $this->question;
+}
+
+
     public function getGuessedLetters(): array { return $this->guessedLetters; }
     public function getRemainingAttempts(): int { return $this->maxAttempts - $this->attemptsMade; }
     public function getMaxAttempts(): int { return $this->maxAttempts; }
