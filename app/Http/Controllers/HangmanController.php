@@ -104,11 +104,38 @@ public function deleteQuestion(Request $request)
 public function guess(Request $request): JsonResponse
 {
     $rawInput = trim($request->input('guess_input') ?? '');
+
     if (empty($rawInput)) {
-        return response()->json(['message' => 'Boş olamaz!'], 400);
+        return response()->json([
+            'message' => 'Boş olamaz!',
+            'maskedWord' => '',
+            'remainingAttempts' => 0,
+            'maxAttempts' => 0,
+            'guessedLetters' => [],
+            'isGameOver' => false,
+            'isWordGuessed' => false,
+            'word' => '',
+            'hintAttemptsLeft' => 0,
+        ]);
     }
 
     $game = $this->getExistingGame() ?? new Hangman();
+
+    // Eğer oyun mevcut değilse veya soru yoksa uyarı ver
+    if (empty($game->getQuestion()) || $game->getQuestion() === 'Henüz soru eklenmedi') {
+        return response()->json([
+            'message' => 'Önce bir soru seçin veya ekleyin!',
+            'maskedWord' => $game->getMaskedWord(),
+            'remainingAttempts' => $game->getRemainingAttempts(),
+            'maxAttempts' => $game->getMaxAttempts(),
+            'guessedLetters' => $game->getGuessedLetters(),
+            'isGameOver' => $game->isGameOver(),
+            'isWordGuessed' => $game->isWordGuessed(),
+            'word' => $game->getWord(),
+            'hintAttemptsLeft' => $game->getHintAttemptsLeft(),
+        ]);
+    }
+
     $correct = $game->guessWord($rawInput);
 
     $message = $game->normalize($rawInput) === $game->cleanWord
@@ -121,7 +148,7 @@ public function guess(Request $request): JsonResponse
         'maskedWord'        => $game->getMaskedWord(),
         'remainingAttempts' => $game->getRemainingAttempts(),
         'maxAttempts'       => $game->getMaxAttempts(),
-        'guessedLetters'    => $game->getGuessedLetters(), // TÜM TAHMİNLER!
+        'guessedLetters'    => $game->getGuessedLetters(),
         'isGameOver'        => $game->isGameOver(),
         'isWordGuessed'     => $game->isWordGuessed(),
         'word'              => $game->getWord(),
@@ -129,6 +156,9 @@ public function guess(Request $request): JsonResponse
         'hintAttemptsLeft'  => $game->getHintAttemptsLeft(),
     ]);
 }
+
+
+
     /**
      * İPUCU METODU (AJAX UYUMLU)
      */
