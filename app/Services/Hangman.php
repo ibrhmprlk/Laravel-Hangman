@@ -123,31 +123,32 @@ class Hangman
 
     /* -------------------- HINT -------------------- */
 
-    public function revealRandomLetters(int $count = 1): array
-    {
-        if ($this->hintAttemptsLeft <= 0) return [];
+ public function revealRandomLetters(int $count = 1): array
+{
+    if ($this->hintAttemptsLeft <= 0) return [];
 
-        $this->hintAttemptsLeft--;
+    $this->hintAttemptsLeft--;
 
-        $hidden = [];
+    $hidden = [];
 
-        foreach (mb_str_split($this->cleanWord, 1, 'UTF-8') as $char) {
-            if (!in_array($char, $this->guessedLetters)) {
-                $hidden[] = $char;
-            }
+    foreach (mb_str_split($this->cleanWord, 1, 'UTF-8') as $char) {
+        if (!in_array($char, $this->guessedLetters)) {
+            $hidden[] = $char;
         }
-
-        $hidden = array_unique($hidden);
-        if (empty($hidden)) return [];
-
-        $toReveal = Arr::random($hidden, min($count, count($hidden)));
-
-        foreach ($toReveal as $char) {
-            $this->guessedLetters[] = $char;
-        }
-
-         $toReveal = Arr::random($hidden, min($count, count($hidden))); // 👈 BURASI
     }
+
+    $hidden = array_values(array_unique($hidden));
+    if (empty($hidden)) return [];
+
+    $toReveal = (array) Arr::random($hidden, min($count, count($hidden)));
+
+    foreach ($toReveal as $char) {
+        $this->guessedLetters[] = $char;
+    }
+
+    return $toReveal;
+}
+
 
     /* -------------------- STATE -------------------- */
 
