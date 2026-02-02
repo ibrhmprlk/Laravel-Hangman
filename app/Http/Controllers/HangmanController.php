@@ -17,18 +17,21 @@ private function getExistingGame(): ?Hangman
 {
     $sessionData = Session::get('hangman_game');
 
-    if ($sessionData) {
-       return new Hangman(
-    $sessionData['word'] ?? null,
-    $sessionData['question'] ?? null,
-    $sessionData['guessed'] ?? [],
-    $sessionData['maxAttempts'] ?? 6,
-    $sessionData['hintAttemptsLeft'] ?? 3,
-    $sessionData['wonByFullWord'] ?? false,
-    $sessionData['attempts'] ?? 0   // 🔥 BU YOKTU
-);
-
+    if (!$sessionData) {
+        return null;
     }
+
+    return new Hangman(
+        $sessionData['word'] ?? null,
+        $sessionData['question'] ?? null,
+        $sessionData['guessed'] ?? [],
+        $sessionData['maxAttempts'] ?? 6,
+        $sessionData['hintAttemptsLeft'] ?? 3,
+        $sessionData['wonByFullWord'] ?? false,
+        $sessionData['attempts'] ?? 0
+    );
+}
+
 
     return null;
 }
