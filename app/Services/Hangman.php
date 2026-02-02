@@ -146,7 +146,7 @@ class Hangman
             $this->guessedLetters[] = $char;
         }
 
-        return $toReveal;
+         $toReveal = Arr::random($hidden, min($count, count($hidden))); // 👈 BURASI
     }
 
     /* -------------------- STATE -------------------- */
