@@ -198,15 +198,17 @@ class Hangman
 
     /* -------------------- SESSION -------------------- */
 
-    public function toSessionArray(): array
-    {
-        return [
-            'word' => $this->originalWord,
-            'question' => $this->question,
-            'guessed' => $this->guessedLetters,
-            'attempts' => $this->attemptsMade,
-            'hintAttemptsLeft' => $this->hintAttemptsLeft,
-            'wonByFullWord' => $this->wonByFullWord,
-        ];
-    }
+   public function toSessionArray(): array
+{
+    return [
+        'word' => $this->originalWord,
+        'question' => $this->question,
+        'guessed' => $this->guessedLetters,
+        'attempts' => $this->attemptsMade,
+        'maxAttempts' => $this->maxAttempts, // 🔥 BU ŞART
+        'hintAttemptsLeft' => $this->hintAttemptsLeft,
+        'wonByFullWord' => $this->wonByFullWord,
+    ];
+}
+
 }
