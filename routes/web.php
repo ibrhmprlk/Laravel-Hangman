@@ -13,5 +13,5 @@ Route::post('hangman/add', [HangmanController::class, 'add'])->name('hangman.add
 // DÜZELTİLDİ: Artık POST metodu kullanıyor ve URL'den ID beklemiyor
 Route::post('/hangman/select', [HangmanController::class, 'selectQuestion'])->name('hangman.select');
 
-Route::post('/hangman/select', [HangmanController::class, 'selectQuestion'])->name('hangman.select');
+
 Route::post('/hangman/delete', [HangmanController::class, 'deleteQuestion'])->name('hangman.delete');
